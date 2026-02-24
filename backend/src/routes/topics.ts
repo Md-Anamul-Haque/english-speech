@@ -32,37 +32,37 @@ topicsRouter.get('/:slug', async (c) => {
 })
 
 // CREATE topic
-topicsRouter.post('/', async (c) => {
-    try {
-        const body = await c.req.json();
-        const newTopic = await Topic.create(body);
-        return c.json(newTopic, 201);
-    } catch (error) {
-        return c.json({ error: 'Failed to create topic' }, 500);
-    }
-})
+// topicsRouter.post('/', async (c) => {
+//     try {
+//         const body = await c.req.json();
+//         const newTopic = await Topic.create(body);
+//         return c.json(newTopic, 201);
+//     } catch (error) {
+//         return c.json({ error: 'Failed to create topic' }, 500);
+//     }
+// })
 
-// UPDATE topic
-topicsRouter.put('/:id', async (c) => {
-    try {
-        const body = await c.req.json();
-        const updatedTopic = await Topic.findByIdAndUpdate(c.req.param('id'), body, { new: true });
-        if (!updatedTopic) return c.json({ error: 'Topic not found' }, 404);
-        return c.json(updatedTopic);
-    } catch (error) {
-        return c.json({ error: 'Failed to update topic' }, 500);
-    }
-})
+// // UPDATE topic
+// topicsRouter.put('/:id', async (c) => {
+//     try {
+//         const body = await c.req.json();
+//         const updatedTopic = await Topic.findByIdAndUpdate(c.req.param('id'), body, { new: true });
+//         if (!updatedTopic) return c.json({ error: 'Topic not found' }, 404);
+//         return c.json(updatedTopic);
+//     } catch (error) {
+//         return c.json({ error: 'Failed to update topic' }, 500);
+//     }
+// })
 
-// DELETE topic
-topicsRouter.delete('/:id', async (c) => {
-    try {
-        const deletedTopic = await Topic.findByIdAndDelete(c.req.param('id'));
-        if (!deletedTopic) return c.json({ error: 'Topic not found' }, 404);
-        return c.json({ message: 'Topic deleted successfully' });
-    } catch (error) {
-        return c.json({ error: 'Failed to delete topic' }, 500);
-    }
-})
+// // DELETE topic
+// topicsRouter.delete('/:id', async (c) => {
+//     try {
+//         const deletedTopic = await Topic.findByIdAndDelete(c.req.param('id'));
+//         if (!deletedTopic) return c.json({ error: 'Topic not found' }, 404);
+//         return c.json({ message: 'Topic deleted successfully' });
+//     } catch (error) {
+//         return c.json({ error: 'Failed to delete topic' }, 500);
+//     }
+// })
 
 export { topicsRouter }

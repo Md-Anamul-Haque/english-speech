@@ -20,13 +20,6 @@ import { wordsRouter } from './routes/words.js'
 import { sentencesRouter } from './routes/sentences.js'
 import { topicsRouter } from './routes/topics.js'
 
-// Mock User API placeholder
-app.get('/api/users', (c) => {
-  return c.json([
-    { id: 1, name: 'Alice', role: 'student' },
-    { id: 2, name: 'Bob', role: 'admin' }
-  ])
-})
 
 // Register Routes
 app.route('/api/words', wordsRouter);

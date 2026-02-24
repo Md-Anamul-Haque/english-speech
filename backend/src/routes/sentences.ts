@@ -27,37 +27,37 @@ sentencesRouter.get('/:id', async (c) => {
 })
 
 // CREATE sentence
-sentencesRouter.post('/', async (c) => {
-    try {
-        const body = await c.req.json();
-        const newSentence = await Sentence.create(body);
-        return c.json(newSentence, 201);
-    } catch (error) {
-        return c.json({ error: 'Failed to create sentence' }, 500);
-    }
-})
+// sentencesRouter.post('/', async (c) => {
+//     try {
+//         const body = await c.req.json();
+//         const newSentence = await Sentence.create(body);
+//         return c.json(newSentence, 201);
+//     } catch (error) {
+//         return c.json({ error: 'Failed to create sentence' }, 500);
+//     }
+// })
 
 // UPDATE sentence
-sentencesRouter.put('/:id', async (c) => {
-    try {
-        const body = await c.req.json();
-        const updatedSentence = await Sentence.findByIdAndUpdate(c.req.param('id'), body, { new: true });
-        if (!updatedSentence) return c.json({ error: 'Sentence not found' }, 404);
-        return c.json(updatedSentence);
-    } catch (error) {
-        return c.json({ error: 'Failed to update sentence' }, 500);
-    }
-})
+// sentencesRouter.put('/:id', async (c) => {
+//     try {
+//         const body = await c.req.json();
+//         const updatedSentence = await Sentence.findByIdAndUpdate(c.req.param('id'), body, { new: true });
+//         if (!updatedSentence) return c.json({ error: 'Sentence not found' }, 404);
+//         return c.json(updatedSentence);
+//     } catch (error) {
+//         return c.json({ error: 'Failed to update sentence' }, 500);
+//     }
+// })
 
-// DELETE sentence
-sentencesRouter.delete('/:id', async (c) => {
-    try {
-        const deletedSentence = await Sentence.findByIdAndDelete(c.req.param('id'));
-        if (!deletedSentence) return c.json({ error: 'Sentence not found' }, 404);
-        return c.json({ message: 'Sentence deleted successfully' });
-    } catch (error) {
-        return c.json({ error: 'Failed to delete sentence' }, 500);
-    }
-})
+// // DELETE sentence
+// sentencesRouter.delete('/:id', async (c) => {
+//     try {
+//         const deletedSentence = await Sentence.findByIdAndDelete(c.req.param('id'));
+//         if (!deletedSentence) return c.json({ error: 'Sentence not found' }, 404);
+//         return c.json({ message: 'Sentence deleted successfully' });
+//     } catch (error) {
+//         return c.json({ error: 'Failed to delete sentence' }, 500);
+//     }
+// })
 
 export { sentencesRouter }
