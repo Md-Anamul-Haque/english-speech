@@ -1,36 +1,39 @@
+export type MongoId = string | { $oid: string };
+export type MongoDate = string | Date | { $date: string };
+
 export interface IWord {
-    _id?: string;
+    _id?: MongoId;
     english: string;
     bangla: string;
     pronunciation?: string;
     partOfSpeech?: 'noun' | 'verb' | 'adjective' | 'adverb' | 'conjunction' | 'preposition';
     difficulty?: 'beginner' | 'intermediate' | 'advanced';
     audioUrl?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: MongoDate;
+    updatedAt?: MongoDate;
 }
 
 export interface ISentence {
-    _id?: string;
+    _id?: MongoId;
     english: string;
     bangla: string;
     context: string;
     contextColor: string;
     difficulty?: 'beginner' | 'intermediate' | 'advanced';
-    relatedWords?: string[];
+    relatedWords?: MongoId[];
     feedback: string | null;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: MongoDate;
+    updatedAt?: MongoDate;
 }
 
 export interface ITopic {
-    _id?: string;
+    _id?: MongoId;
     level: number;
     title: string;
     slug: string;
     description: string;
-    words: string[] | IWord[];
-    sentences: string[] | ISentence[];
-    createdAt?: Date;
-    updatedAt?: Date;
+    words: MongoId[] | IWord[];
+    sentences: MongoId[] | ISentence[];
+    createdAt?: MongoDate;
+    updatedAt?: MongoDate;
 }

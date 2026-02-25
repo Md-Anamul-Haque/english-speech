@@ -1,37 +1,41 @@
 import { Link } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, ImageBackground } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 const index = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.header}>
+        <Animated.View entering={FadeInDown.delay(200)} style={styles.header}>
           <Text style={styles.welcomeText}>Welcome to</Text>
           <Text style={styles.titleText}>English Speech</Text>
-          <Text style={styles.subtitleText}>Master your pronunciation with AI-powered feedback.</Text>
-        </View>
+          <Text style={styles.subtitleText}>Master your pronunciation with offline AI lessons.</Text>
+        </Animated.View>
 
-        <View style={styles.heroSection}>
+        <Animated.View entering={FadeIn.delay(400)} style={styles.heroSection}>
           <View style={styles.heroIconContainer}>
-            <Ionicons name="mic" size={80} color="#3B82F6" />
+            <View style={styles.micCircleInner}>
+              <Ionicons name="mic" size={80} color="#3B82F6" />
+            </View>
           </View>
-        </View>
+        </Animated.View>
 
-        <View style={styles.actionContainer}>
+        <Animated.View entering={FadeInUp.delay(600)} style={styles.actionContainer}>
           <Link href={"/topics" as any} asChild>
-            <TouchableOpacity style={styles.primaryButton}>
+            <TouchableOpacity style={styles.primaryButton} activeOpacity={0.8}>
               <Text style={styles.buttonText}>Start Learning</Text>
               <Ionicons name="arrow-forward" size={20} color="#FFF" />
             </TouchableOpacity>
           </Link>
 
-          <TouchableOpacity style={styles.secondaryButton}>
-            <Text style={styles.secondaryButtonText}>Quick Practice</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={styles.statusBadge}>
+            <Ionicons name="airplane" size={16} color="#64748B" />
+            <Text style={styles.statusText}>Offline Mode Enabled</Text>
+          </View>
+        </Animated.View>
       </View>
     </SafeAreaView>
   );
@@ -77,11 +81,24 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: "#E2E8F0",
+    backgroundColor: "#F1F5F9",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 8,
-    borderColor: "#F1F5F9",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  micCircleInner: {
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: "#FFF",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#3B82F6",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 5,
   },
   actionContainer: {
     marginBottom: 40,
@@ -106,17 +123,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
   },
-  secondaryButton: {
-    height: 64,
-    borderRadius: 32,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#E2E8F0",
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 8,
   },
-  secondaryButtonText: {
-    color: "#0F172A",
-    fontSize: 18,
-    fontWeight: "600",
-  },
+  statusText: {
+    color: '#64748B',
+    fontSize: 14,
+    fontWeight: '500',
+  }
 });

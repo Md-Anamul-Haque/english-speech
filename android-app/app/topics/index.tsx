@@ -1,73 +1,71 @@
 import { Link } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import type { ITopic } from "../../types";
-import { Config } from "../../constants/Config";
+import Animated, { FadeInRight, Layout } from 'react-native-reanimated';
+import { dataProvider } from "../../data/DataProvider";
+import { ITopic } from "../../types";
 
 const TopicsScreen = () => {
-    const [topics, setTopics] = useState<ITopic[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+    const allTopics = dataProvider.getTopics();
 
-    useEffect(() => {
-        const fetchTopics = async () => {
-            try {
-                const res = await fetch(`${Config.API_URL}/api/topics`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setTopics(data);
-                }
-            } catch (error) {
-                console.error("Error fetching topics:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const filteredTopics = searchQuery
+        ? dataProvider.searchTopics(searchQuery)
+        : allTopics;
 
-        fetchTopics();
-    }, []);
-
-    const renderItem = ({ item }: { item: ITopic }) => (
-        <Link href={`/topics/${item.slug}` as any} asChild>
-            <TouchableOpacity style={styles.topicCard}>
-                <View style={styles.topicInfo}>
-                    <View style={styles.levelBadge}>
-                        <Text style={styles.levelText}>Lvl {item.level}</Text>
+    const renderItem = ({ item, index }: { item: ITopic; index: number }) => (
+        <Animated.View entering={FadeInRight.delay(index * 50).springify().damping(12)}>
+            <Link href={`/topics/${item.slug}` as any} asChild>
+                <TouchableOpacity style={styles.topicCard} activeOpacity={0.7}>
+                    <View style={styles.topicInfo}>
+                        <View style={styles.levelBadge}>
+                            <Text style={styles.levelLabel}>LVL</Text>
+                            <Text style={styles.levelText}>{item.level}</Text>
+                        </View>
+                        <View style={styles.textContainer}>
+                            <Text style={styles.topicTitle} numberOfLines={1}>{item.title}</Text>
+                            <Text style={styles.topicDescription} numberOfLines={2}>
+                                {item.description}
+                            </Text>
+                        </View>
                     </View>
-                    <View style={styles.textContainer}>
-                        <Text style={styles.topicTitle}>{item.title}</Text>
-                        <Text style={styles.topicDescription} numberOfLines={2}>
-                            {item.description}
-                        </Text>
+                    <View style={styles.arrowContainer}>
+                        <Ionicons name="chevron-forward" size={18} color="#3B82F6" />
                     </View>
-                </View>
-                <Ionicons name="chevron-forward" size={24} color="#CBD5E1" />
-            </TouchableOpacity>
-        </Link>
+                </TouchableOpacity>
+            </Link>
+        </Animated.View>
     );
-
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#3B82F6" />
-            </View>
-        );
-    }
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>Learning Path</Text>
-                <Text style={styles.headerSubtitle}>Choose a topic to begin your lesson</Text>
+                <Text style={styles.headerTitle}>Offline Course</Text>
+                <Text style={styles.headerSubtitle}>{allTopics.length} Lessons Available</Text>
+
+                <View style={styles.searchContainer}>
+                    <Ionicons name="search" size={20} color="#94A3B8" />
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Search topics..."
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        placeholderTextColor="#94A3B8"
+                    />
+                </View>
             </View>
 
             <FlatList
-                data={topics}
+                data={filteredTopics}
                 renderItem={renderItem}
-                keyExtractor={(item) => item._id || item.slug}
+                keyExtractor={(item, index) => item.slug + index}
                 contentContainerStyle={styles.listContent}
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
+                initialNumToRender={10}
+                maxToRenderPerBatch={20}
+                windowSize={5}
             />
         </SafeAreaView>
     );
@@ -78,12 +76,6 @@ export default TopicsScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#F8FAFC",
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
         backgroundColor: "#F8FAFC",
     },
     header: {
@@ -101,6 +93,21 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#64748B",
         marginTop: 4,
+    },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F1F5F9',
+        borderRadius: 12,
+        paddingHorizontal: 12,
+        marginTop: 16,
+        height: 48,
+    },
+    searchInput: {
+        flex: 1,
+        marginLeft: 8,
+        fontSize: 16,
+        color: '#0F172A',
     },
     listContent: {
         padding: 16,
@@ -126,20 +133,33 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     levelBadge: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: "#EFF6FF",
+        width: 50,
+        height: 50,
+        borderRadius: 12,
+        backgroundColor: "#E0F2FE",
         alignItems: "center",
         justifyContent: "center",
         marginRight: 16,
-        borderWidth: 1,
-        borderColor: "#DBEAFE",
+    },
+    levelLabel: {
+        fontSize: 8,
+        fontWeight: "800",
+        color: "#0369A1",
+        letterSpacing: 1,
     },
     levelText: {
-        color: "#3B82F6",
-        fontWeight: "800",
-        fontSize: 12,
+        color: "#0369A1",
+        fontWeight: "900",
+        fontSize: 18,
+        marginTop: -2,
+    },
+    arrowContainer: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: "#EFF6FF",
+        alignItems: "center",
+        justifyContent: "center",
     },
     textContainer: {
         flex: 1,

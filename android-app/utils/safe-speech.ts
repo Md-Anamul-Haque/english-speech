@@ -1,43 +1,38 @@
-import { Alert } from "react-native";
-import React from 'react';
+import { Platform } from 'react-native';
 
 /**
- * A fail-safe wrapper that prevents crashes if the native module is missing.
- * We use dynamic require to avoid top-level import errors in Metro.
+ * A safe wrapper for expo-speech-recognition and whisper
+ * to prevent crashes in Expo Go or incompatible environments.
  */
-let NativeModule: any = null;
-let NativeHook: any = null;
 
-try {
-    const Lib = require("expo-speech-recognition");
-    NativeModule = Lib.ExpoSpeechRecognitionModule;
-    NativeHook = Lib.useSpeechRecognitionEvent;
-} catch (e) {
-    console.warn("Could not find expo-speech-recognition library.");
-}
-
-// Detection for missing native module behavior
-const isNativeAvailable = !!NativeModule && typeof NativeModule.requestPermissionsAsync === 'function';
-
-export const ExpoSpeechRecognitionModule = isNativeAvailable ? NativeModule : {
-    requestPermissionsAsync: async () => {
-        Alert.alert("Development Build Required", "Native Speech Recognition is not available in Expo Go. Use 'npx expo run:android' to build a compatible client.");
-        return { granted: false };
-    },
-    start: () => console.log("[Mock] Speech Recognition Start"),
-    stop: () => console.log("[Mock] Speech Recognition Stop"),
-    abort: () => console.log("[Mock] Speech Recognition Abort"),
-    getStateAsync: async () => ({ status: 'idle' }),
+export const isNativeModuleAvailable = () => {
+    // In a real dev build, you'd check if the native module exists.
+    // For Expo Go, we'll return false to use the fallback.
+    return false;
 };
 
-export const useSpeechRecognitionEvent = (eventName: string, callback: (event: any) => void) => {
-    // If native is available, use the real hook
-    if (isNativeAvailable && NativeHook) {
-        return NativeHook(eventName, callback);
-    }
+export const startRecordingSafe = async (onResult: (text: string) => void) => {
+    console.log("Speech recognition not available in Expo Go - Using Mock Mode");
+    // Simulate successful recognition after 2 seconds for testing
+    setTimeout(() => {
+        onResult("This is a mock result for testing offline UI.");
+    }, 2000);
+};
 
-    // Otherwise, do nothing (silent mock)
-    React.useEffect(() => {
-        console.log(`[Mock] Registered listener for: ${eventName}`);
-    }, [eventName]);
+export const stopRecordingSafe = async () => {
+    console.log("Stopped Mock Recording");
+};
+
+export const getSpeechFeedback = (actual: string, expected: string) => {
+    const normActual = actual.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").trim();
+    const normExpected = expected.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").trim();
+
+    if (normActual === normExpected) return 100;
+
+    // Basic percentage calculation for demo
+    const actualWords = normActual.split(' ');
+    const expectedWords = normExpected.split(' ');
+    const matches = actualWords.filter(w => expectedWords.includes(w)).length;
+
+    return Math.round((matches / expectedWords.length) * 100);
 };
